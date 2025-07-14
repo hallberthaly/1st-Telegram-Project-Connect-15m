@@ -74,13 +74,13 @@ jobs:
           next_name="${cool_names[$idx]}"
           file_name="levels/level-$(date +%Y%m%d-%H%M)-${next_name}.txt"
 
-          {
-            echo "# 🌌 Level: $next_name"
-            echo "# Generated at: $(date -u)"
-            echo "# By: edmoniaeaster@gmail.com"
-          } > "$file_name"
+          # Gunakan username GitHub sebagai Nama (bukan email)
+          echo "# 🌌 Level: $next_name" > "$file_name"
+          echo "# Generated at: $(date -u)" >> "$file_name"
+          echo "# By: ${{ github.actor }}" >> "$file_name"
 
           echo "LEVEL_NAME=$next_name" >> $GITHUB_ENV
+          echo "LEVEL_AUTHOR=${{ github.actor }}" >> $GITHUB_ENV
           echo "Created $file_name"
 
       - name: ⏰ Generate Formatted Time
@@ -109,7 +109,7 @@ jobs:
             <b>• 🌐 Git Repo :</b> <b>${{ github.repository }}</b>
             <b>• ⏳ Deployed At :</b> <b>${{ env.FORMATTED_TIME }}</b>
             <b>• 🧾 CI Run # :</b> <b>${{ env.NOTIF_COUNTER }}</b>
-            <b>• 🔐 Commit Auth :</b> <b>edmoniaeaster@gmail.com</b>
+            <b>• 🔐 Commit Auth :</b> <b>${{ env.LEVEL_AUTHOR }}</b>
 
             <b>#DeployLikeAPro #DevOpsMode</b>
             <b>💯 This script was 100% created by Abie Haryatmo</b>
@@ -118,21 +118,21 @@ jobs:
 
       - name: 🤖 Configure Git
         run: |
-          git config user.name "edmoniaeaster"
-          git config user.email "edmoniaeaster@gmail.com"
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
 
       - name: 🚩 Commit & Push Changes
         run: |
           git add levels/
-          git commit -m "✨ Add Level: ${{ env.LEVEL_NAME }} (by edmoniaeaster@gmail.com)" || echo "Nothing to commit"
+          git commit -m "✨ Add Level: ${{ env.LEVEL_NAME }} (by ${{ github.actor }})" || echo "Nothing to commit"
           git push
 
       - name: 🏆 Generate Leaderboard
         run: |
-          echo "| No | Nama | Jumlah Level |" > leaderboard.md
-          echo "|----|------|--------------|" >> leaderboard.md
+          echo "| No | Nama            | Jumlah Level |" > leaderboard.md
+          echo "|----|-----------------|--------------|" >> leaderboard.md
           grep '^# By:' levels/*.txt | cut -d':' -f2 | awk '{$1=$1;print}' | sort | uniq -c | sort -nr \
-            | awk '{ printf("| %d | %s | %d |\n", NR, $2, $1) }' >> leaderboard.md
+            | awk '{ printf("| %d  | %s    |    %d        |\n", NR, $2, $1) }' >> leaderboard.md
 
       - name: 🚩 Commit & Push Leaderboard
         run: |
