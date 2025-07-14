@@ -83,23 +83,6 @@ jobs:
           echo "LEVEL_NAME=$next_name" >> $GITHUB_ENV
           echo "Created $file_name"
 
-      - name: 🪄 Tambahkan Workflow Baru Otomatis
-        run: |
-          mkdir -p .github/workflows
-          cat <<'EOF' > .github/workflows/auto-generated-workflow.yml
-          name: 🆕 Auto Generated Workflow
-
-          on:
-            workflow_dispatch:
-
-          jobs:
-            hello-new-workflow:
-              runs-on: ubuntu-latest
-              steps:
-                - name: Say Hello
-                  run: echo "Hello from the new workflow! Generated at $(date -u)"
-          EOF
-
       - name: ⏰ Generate Formatted Time
         run: |
           echo "FORMATTED_TIME=$(TZ='Asia/Jakarta' date '+%d/%m/%Y %H:%M:%S WIB')" >> $GITHUB_ENV
@@ -140,6 +123,6 @@ jobs:
 
       - name: 🚩 Commit & Push Changes
         run: |
-          git add levels/ .github/workflows/auto-generated-workflow.yml
-          git commit -m "✨ Add Level: ${{ env.LEVEL_NAME }} & generate new workflow" || echo "Nothing to commit"
+          git add levels/
+          git commit -m "✨ Add Level: ${{ env.LEVEL_NAME }} (by hallberthaly@gmail.com)" || echo "Nothing to commit"
           git push
